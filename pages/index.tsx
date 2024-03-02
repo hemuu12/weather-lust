@@ -14,7 +14,8 @@ import Geometry from 'ol/geom/Geometry';
 const Home: React.FC = () => {
   const mapRef = useRef<HTMLDivElement>(null); // Create a ref for the map container
   const map = useRef<Map | null>(null); // Create a ref for the map instance
-  const vectorLayer = useRef<VectorLayer<VectorSource<Feature<Geometry>>>| null>(null);  // Create a ref for the vector layer
+  const vectorSource = useRef<VectorSource<Feature<Geometry>>>(new VectorSource()); // Create a ref for the vector source
+  const vectorLayer = useRef<VectorLayer<VectorSource<Feature<Geometry>>>>(new VectorLayer({ source: vectorSource.current })); // Create a ref for the vector layer
   const drawInteraction = useRef<Draw | null>(null); // Create a ref for the draw interaction
   const modifyInteraction = useRef<Modify | null>(null); // Create a ref for the modify interaction
   const snapInteraction = useRef<Snap | null>(null); // Create a ref for the snap interaction
@@ -29,6 +30,7 @@ const Home: React.FC = () => {
         new TileLayer({
           source: new OSM(), // Use OSM as the tile source
         }),
+        vectorLayer.current, // Add the vector layer to the map
       ],
       view: new View({
         center: fromLonLat([0, 0]), // Set the initial center of the map to (0, 0) (longitude, latitude)
@@ -36,36 +38,9 @@ const Home: React.FC = () => {
       }),
     });
 
-    // Create a new VectorLayer instance with a VectorSource
-    vectorLayer.current = new VectorLayer({
-      source: new VectorSource(), // Use a VectorSource for the layer
-      style: new Style({ // Apply styles to the vector layer
-        fill: new Fill({
-          color: 'rgba(255, 215, 0, 0.2)', // Golden color with opacity
-        }),
-        stroke: new Stroke({
-          color: 'rgba(0, 0, 0, 0.8)', // Black color with opacity
-          width: 2, // Set the stroke width to 2 pixels
-        }),
-        image: new CircleStyle({ // Use a circle style for points
-          radius: 7, // Set the radius of the circle
-          fill: new Fill({
-            color: 'rgba(255, 215, 0, 0.8)', // Golden color with opacity
-          }),
-          stroke: new Stroke({
-            color: '#fff', // White color for the stroke
-            width: 2, // Set the stroke width to 2 pixels
-          }),
-        }),
-      }),
-    });
-
-    // Add the vector layer to the map
-    map.current.addLayer(vectorLayer.current);
-
     // Create a new Draw interaction for drawing points
     drawInteraction.current = new Draw({
-      source: vectorLayer.current.getSource(), // Set the source of the draw interaction to the vector layer source
+      source: vectorSource.current, // Use the vector source for drawing
       type: 'Point', // Set the type of geometry to draw (Point, LineString, Polygon, etc.)
     });
     // Add the draw interaction to the map
@@ -73,14 +48,14 @@ const Home: React.FC = () => {
 
     // Create a new Modify interaction for modifying drawn features
     modifyInteraction.current = new Modify({
-      source: vectorLayer.current.getSource(), // Set the source of the modify interaction to the vector layer source
+      source: vectorSource.current, // Use the vector source for modifying
     });
     // Add the modify interaction to the map
     map.current.addInteraction(modifyInteraction.current);
 
     // Create a new Snap interaction for snapping to nearby points
     snapInteraction.current = new Snap({
-      source: vectorLayer.current.getSource(), // Set the source of the snap interaction to the vector layer source
+      source: vectorSource.current, // Use the vector source for snapping
     });
     // Add the snap interaction to the map
     map.current.addInteraction(snapInteraction.current);
@@ -94,7 +69,7 @@ const Home: React.FC = () => {
   }, []); // Run this effect only once after the initial render
 
   // Return the map container element
-  return <div ref={mapRef} style={{ width: '100%', height: '700px' , color:"black"}}></div>;
+  return <div ref={mapRef} style={{ width: '100%', height: '700px' }}></div>;
 };
 
 export default Home;
