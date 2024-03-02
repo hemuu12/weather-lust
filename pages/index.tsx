@@ -9,11 +9,12 @@ import VectorLayer from 'ol/layer/Vector'; // Import the VectorLayer class from 
 import VectorSource from 'ol/source/Vector'; // Import the VectorSource class from OpenLayers
 import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style'; // Import style classes from OpenLayers
 import Feature from 'ol/Feature';
+import Geometry from 'ol/geom/Geometry';
 
 const Home: React.FC = () => {
   const mapRef = useRef<HTMLDivElement>(null); // Create a ref for the map container
   const map = useRef<Map | null>(null); // Create a ref for the map instance
-  const vectorLayer = useRef<VectorLayer<VectorSource<Feature>> | null>(null); // Create a ref for the vector layer
+  const vectorLayer = useRef<VectorLayer<VectorSource<Feature<Geometry>>>| null>(null);  // Create a ref for the vector layer
   const drawInteraction = useRef<Draw | null>(null); // Create a ref for the draw interaction
   const modifyInteraction = useRef<Modify | null>(null); // Create a ref for the modify interaction
   const snapInteraction = useRef<Snap | null>(null); // Create a ref for the snap interaction
